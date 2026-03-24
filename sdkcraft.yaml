@@ -1,0 +1,104 @@
+name: node
+adopt-info: node
+summary: Node.js
+description: |
+  This SDK provides a complete Node.js development environment built from source,
+  with Corepack enabled for flexible package manager choice. Package manager
+  caches are persisted on the host to speed up dependency installations across
+  workshop updates.
+
+  ## Key components
+
+  - `node`: Node.js JavaScript runtime (v20.x), providing a consistent version
+    across all supported bases regardless of the Ubuntu release.
+  - `npm`: Node.js package manager with download cache persistence.
+  - `corepack`: Package manager version management tool that provides `pnpm`
+    and `yarn` shims.
+  - `npx`: Binary execution tool (included with `npm`).
+
+  The SDK focuses on providing the Node.js runtime and package management tools.
+  Build tools such as `gcc` and `make` are **not** included. If your project has
+  native dependencies that require compilation, install the necessary toolchain
+  separately.
+
+  ## Setup actions
+
+  On launch, the SDK:
+
+  - Adds Node.js binaries to `PATH` and generates shell completions for
+    `node` and `npm`.
+  - Sets the `npm` global prefix to `~/.local` for package installation without
+    `sudo`.
+  - Configures persistent mount plugs for `npm`, `pnpm`, and `yarn` caches
+    to preserve package downloads across workshop updates.
+
+  No package installation happens automatically; you control when to run
+  `npm install` or equivalent via workshop actions or manually.
+license: MIT
+platforms:
+  ubuntu@22.04:amd64:
+  ubuntu@24.04:amd64:
+
+plugs:
+  npm-cache:
+    interface: mount
+    workshop-target: /home/workshop/.npm/_cacache
+  pnpm-cache:
+    interface: mount
+    workshop-target: /home/workshop/.cache/pnpm
+  # By default pnpm will use /project/.pnpm-store.
+  # To use this mount (which is a bit slower):
+  # pnpm config set storeDir ~/.local/share/pnpm/store.
+  pnpm-store:
+    interface: mount
+    workshop-target: /home/workshop/.local/share/pnpm/store
+  yarn-cache:
+    interface: mount
+    workshop-target: /home/workshop/.cache/yarn
+slots:
+  # https://nodejs.org/api/debugger.html#v8-inspector-integration-for-nodejs
+  inspector:
+    interface: tunnel
+    endpoint: 9229
+
+parts:
+  node:
+    plugin: make
+    source: .
+    build-packages:
+      - gnupg
+    override-pull: |
+      VERSION=$(cat "$CRAFT_PROJECT_DIR/VERSION")
+      craftctl set version="$VERSION"
+
+      # Import Node.js release team GPG keys.
+      # Full list: https://github.com/nodejs/node#release-keys
+      gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys \
+        5BE8A3F6C8A5C01D106C0AD820B1A390B168D356 \
+        DD792F5973C6DE52C432CBDAC77ABFA00DDBF2B7 \
+        CC68F5A3106FF448322E48ED27F5E38D5B0A215F \
+        8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
+        890C08DB8579162FEE0DF9DB8BEAB4DFCF555EF4 \
+        C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C \
+        108F52B48DB57BB0CC439B2997B01419BD92F80A \
+        A363A499291CBBC940DD62E41F10027AF002F8B0
+
+      curl -fLO "https://nodejs.org/download/release/v${VERSION}/node-v${VERSION}.tar.gz"
+      curl -fLO "https://nodejs.org/download/release/v${VERSION}/SHASUMS256.txt"
+      curl -fLO "https://nodejs.org/download/release/v${VERSION}/SHASUMS256.txt.sig"
+
+      # Verify the checksum file was signed by a known release key,
+      # then verify the tarball against it.
+      gpg --batch --verify SHASUMS256.txt.sig SHASUMS256.txt
+      grep " node-v${VERSION}.tar.gz$" SHASUMS256.txt | sha256sum -c -
+
+      tar -xzf "node-v${VERSION}.tar.gz" --strip-components=1 -C "$CRAFT_PART_SRC"
+      rm "node-v${VERSION}.tar.gz" SHASUMS256.txt SHASUMS256.txt.sig
+    override-build: |
+      ./configure --prefix=/
+      craftctl default
+      PATH="${CRAFT_PART_INSTALL}/bin:$PATH"
+      corepack enable
+    stage:
+      - -include
+      - -share

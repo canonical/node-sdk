@@ -1,0 +1,26 @@
+if ! sudo -u workshop --login node --version >/dev/null; then
+  workshopctl set-health error 'Node.js not found'
+  exit 1
+fi
+
+if ! sudo -u workshop --login npm --version >/dev/null; then
+  workshopctl set-health error 'npm not found'
+  exit 1
+fi
+
+if ! sudo -u workshop --login corepack --version >/dev/null; then
+  workshopctl set-health error 'Corepack not found'
+  exit 1
+fi
+
+if ! sudo -u workshop bash -lc 'command -v pnpm' >/dev/null; then
+  workshopctl set-health error 'pnpm shim not found'
+  exit 1
+fi
+
+if ! sudo -u workshop bash -lc 'command -v yarn' >/dev/null; then
+  workshopctl set-health error 'Yarn shim not found'
+  exit 1
+fi
+
+workshopctl set-health okay
