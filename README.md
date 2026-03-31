@@ -16,7 +16,7 @@ name: node-app
 base: ubuntu@24.04
 sdks:
   - name: node
-    channel: 24.04/edge
+    channel: 22/stable
 
 actions:
   install: |
