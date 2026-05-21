@@ -165,7 +165,7 @@ Chrome DevTools or VS Code) to the forwarded port on the host.
 
 - Node.js community: [Node.js Discussions](https://github.com/nodejs/node/discussions)
 - Workshop forum:
-  [Workshop Discourse](https://discourse.canonical.com/c/engineering/sdk/34)
+  [Discourse](https://discourse.ubuntu.com/)
 - Please review our
   [Code of Conduct](https://ubuntu.com/community/ethos/code-of-conduct) before
   participating.
