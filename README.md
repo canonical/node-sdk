@@ -157,7 +157,7 @@ Chrome DevTools or VS Code) to the forwarded port on the host.
 - [Corepack documentation](https://nodejs.org/api/corepack.html)
 - [pnpm documentation](https://pnpm.io/)
 - [Yarn documentation](https://yarnpkg.com/)
-- [Workshop documentation](https://canonical-workshop.readthedocs-hosted.com/latest/)
+- [Workshop documentation](https://ubuntu.com/workshop/docs/)
 
 ---
 
