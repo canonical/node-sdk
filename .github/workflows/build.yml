@@ -11,17 +11,4 @@ concurrency:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - runs-on: [self-hosted, linux, jammy, x64, xlarge]
-          - runs-on: [self-hosted, linux, jammy, ARM64, xlarge]
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install sdkcraft
-        run: sudo snap install sdkcraft --edge --classic
-
-      - name: Pack SDK
-        run: sdkcraft pack
+    uses: canonical/sdkcraft-actions/.github/workflows/build.yml@main
