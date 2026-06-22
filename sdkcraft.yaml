@@ -35,6 +35,7 @@ description: |
   No package installation happens automatically; you control when to run
   `npm install` or equivalent via workshop actions or manually.
 license: MIT
+website: https://github.com/canonical/node-sdk
 platforms:
   ubuntu@26.04:amd64:
   ubuntu@26.04:arm64:
