@@ -1,0 +1,22 @@
+summary: Verify npm uses workshop-user configuration and cache paths
+
+prepare: |
+  envsubst '${BASE}' <workshop.yaml.in >workshop.yaml
+  workshop launch
+
+execute: |
+  workshop exec -- npm config get prefix | MATCH '^/home/workshop/.local$'
+  workshop exec -- npm config get cache | MATCH '^/home/workshop/.npm$'
+  workshop exec -- test -d /home/workshop/.local/lib
+  workshop exec -- test -d /home/workshop/.npm/_cacache
+  workshop exec -- test -d /home/workshop/.cache/pnpm
+  workshop exec -- test -d /home/workshop/.cache/yarn
+  workshop exec -- test -d /home/workshop/.local/share/pnpm/store
+
+debug: |
+  workshop exec -- npm config list --location=user || true
+  workshop exec -- find /home/workshop/.npm /home/workshop/.cache /home/workshop/.local -maxdepth 3 -type d || true
+  workshop tasks
+
+restore: |
+  workshop remove || true
