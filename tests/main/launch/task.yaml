@@ -1,0 +1,15 @@
+summary: Launch a workshop with the Node.js SDK
+
+prepare: |
+  envsubst '${BASE}' <workshop.yaml.in >workshop.yaml
+  workshop launch
+
+execute: |
+  workshop exec -- true
+
+debug: |
+  workshop tasks
+  workshop status || true
+
+restore: |
+  workshop remove || true
