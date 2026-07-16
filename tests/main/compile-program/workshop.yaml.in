@@ -1,0 +1,4 @@
+name: test-node
+base: ${BASE}
+sdks:
+  - name: try-node
