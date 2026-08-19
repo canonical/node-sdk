@@ -1,0 +1,60 @@
+summary: Build, test, and run a Node.js project with npm dependencies
+
+prepare: |
+  envsubst '${BASE}' <workshop.yaml.in >workshop.yaml
+  workshop launch
+
+execute: |
+  workshop exec -- mkdir -p src test
+  workshop exec -- tee package.json >/dev/null <<'EOF'
+  {
+    "name": "node-sdk-workshop-test",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+      "build": "node --check src/main.js",
+      "start": "node src/main.js",
+      "test": "node --test"
+    },
+    "dependencies": {
+      "left-pad": "1.3.0"
+    }
+  }
+  EOF
+  workshop exec -- tee src/format.js >/dev/null <<'EOF'
+  import leftPad from 'left-pad';
+
+  export function formatMessage(value) {
+    return leftPad(value, 8, '0');
+  }
+  EOF
+  workshop exec -- tee src/main.js >/dev/null <<'EOF'
+  import { formatMessage } from './format.js';
+
+  console.log(`node-sdk:${formatMessage('42')}`);
+  EOF
+  workshop exec -- tee test/format.test.js >/dev/null <<'EOF'
+  import test from 'node:test';
+  import assert from 'node:assert/strict';
+  import { formatMessage } from '../src/format.js';
+
+  test('formatMessage pads project values', () => {
+    assert.equal(formatMessage('42'), '00000042');
+  });
+  EOF
+  workshop exec -- npm install
+  workshop exec -- test -d /home/workshop/.npm/_cacache
+  workshop exec -- npm test
+  workshop exec -- npm run build
+  workshop exec -- npm start | MATCH '^node-sdk:00000042$'
+
+debug: |
+  workshop exec -- node --version || true
+  workshop exec -- npm --version || true
+  workshop exec -- npm config get cache || true
+  workshop exec -- find /home/workshop/.npm/_cacache -maxdepth 2 -type d || true
+  workshop exec -- find . -maxdepth 3 -type f || true
+  workshop tasks
+
+restore: |
+  workshop remove || true
