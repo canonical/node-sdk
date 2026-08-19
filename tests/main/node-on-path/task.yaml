@@ -1,0 +1,19 @@
+summary: Verify Node.js SDK commands are available on PATH
+
+prepare: |
+  envsubst '${BASE}' <workshop.yaml.in >workshop.yaml
+  workshop launch
+
+execute: |
+  for command in node npm npx corepack pnpm yarn; do
+    workshop exec -- which ${command} | MATCH "/${command}$"
+  done
+
+debug: |
+  workshop exec -- printenv PATH || true
+  workshop exec -- ls -l /etc/profile.d/nodejs.sh || true
+  workshop exec -- cat /etc/profile.d/nodejs.sh || true
+  workshop tasks
+
+restore: |
+  workshop remove || true
