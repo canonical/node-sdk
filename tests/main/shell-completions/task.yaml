@@ -1,0 +1,20 @@
+summary: Verify Node.js SDK shell setup files are installed
+
+prepare: |
+  envsubst '${BASE}' <workshop.yaml.in >workshop.yaml
+  workshop launch
+
+execute: |
+  workshop exec -- grep -F 'export PATH=' /etc/profile.d/nodejs.sh
+  workshop exec -- test -s /etc/bash_completion.d/node_bash_completion
+  workshop exec -- test -s /etc/bash_completion.d/npm
+  workshop exec -- grep -F 'node' /etc/bash_completion.d/node_bash_completion
+  workshop exec -- grep -F 'npm' /etc/bash_completion.d/npm
+
+debug: |
+  workshop exec -- cat /etc/profile.d/nodejs.sh || true
+  workshop exec -- ls -l /etc/bash_completion.d/node_bash_completion /etc/bash_completion.d/npm || true
+  workshop tasks
+
+restore: |
+  workshop remove || true
