@@ -8,8 +8,7 @@
       "managerFilePatterns": ["/^VERSION$/"],
       "matchStrings": ["(?<currentValue>[0-9.]+)"],
       "depNameTemplate": "node",
-      "datasourceTemplate": "node-version",
-      "versioningTemplate": "semver"
+      "datasourceTemplate": "node-version"
     }
   ],
   "automerge": true,
@@ -19,17 +18,17 @@
     {
       "matchPackageNames": ["node"],
       "matchBaseBranches": ["20"],
-      "allowedVersions": "/^20\\./"
+      "allowedVersions": "20.x"
     },
     {
       "matchPackageNames": ["node"],
       "matchBaseBranches": ["22"],
-      "allowedVersions": "/^22\\./"
+      "allowedVersions": "22.x"
     },
     {
       "matchPackageNames": ["node"],
       "matchBaseBranches": ["24"],
-      "allowedVersions": "/^24\\./"
+      "allowedVersions": "24.x"
     }
   ]
 }
