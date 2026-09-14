@@ -32,5 +32,6 @@ jobs:
       platforms: ${{ toJSON(matrix.platforms) }}
       platform-flag: "--platform"
       risk: "stable"
+      promote-to-latest: true
     secrets:
       SDKCRAFT_STORE_CREDENTIALS: ${{ secrets.SDKCRAFT_STORE_CREDENTIALS_PROD }}
